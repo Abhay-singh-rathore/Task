@@ -15,10 +15,10 @@ const AppNavigator = () => (
   <NavigationContainer>
     <Stack.Navigator initialRouteName="SplashScreen">
         <Stack.Screen name="SplashScreen" component={SplashScreen} options={{ headerShown: false }} />
-      <Stack.Screen name="LoginScreen" component={LoginScreen} />
-      <Stack.Screen name="RegisterScreen" component={RegisterScreen} />
+      <Stack.Screen name="LoginScreen" component={LoginScreen} options={{ headerShown: false }}/>
+      <Stack.Screen name="RegisterScreen" component={RegisterScreen} options={{ headerShown: false }} />
       <Stack.Screen name="HomeScreen" component={HomeScreen} options={{ headerShown: false }} />
-       <Stack.Screen name="TaskFormScreen" component={TaskFormScreen} />
+       <Stack.Screen name="TaskFormScreen" component={TaskFormScreen} options={{ headerShown: false }}/>
     </Stack.Navigator>
   </NavigationContainer>
 );

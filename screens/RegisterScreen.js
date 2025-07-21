@@ -1,4 +1,3 @@
-// src/screens/RegisterScreen.js
 import React, { useEffect, useState } from 'react';
 import {
   View,
@@ -7,12 +6,11 @@ import {
   TouchableOpacity,
   StyleSheet,
   ActivityIndicator,
-  Platform,
   Image,
+  Alert,
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { registerUser } from '../redux/authSlice';
-import { useNavigation } from '@react-navigation/native';
 
 const RegisterScreen = ({ navigation }) => {
   const dispatch = useDispatch();
@@ -27,114 +25,135 @@ const RegisterScreen = ({ navigation }) => {
     }
   }, [user]);
 
+  const validateEmail = (email) => {
+    const regex = /^\S+@\S+\.\S+$/;
+    return regex.test(email);
+  };
+
   const handleRegister = () => {
+    if (!email || !password) {
+      Alert.alert('Missing Fields', 'Please enter both email and password.');
+      return;
+    }
+
+    if (!validateEmail(email)) {
+      Alert.alert('Invalid Email', 'Please enter a valid email address.');
+      return;
+    }
+
     dispatch(registerUser({ email, password }));
   };
 
-  const handleGoogleSignIn = () => {
-    // TODO: Implement Google sign-in logic
-    console.log('Google Sign-In pressed');
-  };
-
-  const handleFacebookSignIn = () => {
-    // TODO: Implement Facebook sign-in logic
-    console.log('Facebook Sign-In pressed');
-  };
-
-  const handleAppleSignIn = () => {
-    // TODO: Implement Apple sign-in logic
-    console.log('Apple Sign-In pressed');
-  };
-
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Let's Get Started!</Text>
+    <View style={styles.wrapper}>
+      <View style={styles.container}>
+        <View style={styles.logoContainer}>
+          <Image source={require('../assets/check-icon.png')} style={styles.logoImage} />
+        </View>
 
-      <TextInput
-        placeholder="Email"
-        style={styles.input}
-        value={email}
-        onChangeText={setEmail}
-        autoCapitalize="none"
-      />
-      <TextInput
-        placeholder="Password"
-        style={styles.input}
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-      />
+        <Text style={styles.title}>Let's get started!</Text>
 
-      {error && <Text style={styles.error}>{error}</Text>}
+        <TextInput
+          placeholder="EMAIL ADDRESS"
+          placeholderTextColor="#999"
+          style={styles.input}
+          value={email}
+          onChangeText={setEmail}
+          autoCapitalize="none"
+        />
+        <TextInput
+          placeholder="PASSWORD"
+          placeholderTextColor="#999"
+          style={styles.input}
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry
+        />
 
-      <TouchableOpacity style={styles.button} onPress={handleRegister} disabled={loading}>
-        {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.btnText}>Sign up</Text>}
-      </TouchableOpacity>
+        {error && <Text style={styles.error}>{error}</Text>}
 
-      <Text style={styles.orText}>Or sign up with</Text>
-
-      <View style={styles.socialContainer}>
-        <TouchableOpacity style={styles.socialBtn} onPress={handleGoogleSignIn}>
-          <Image source={require('../assets/google.png')} style={styles.socialIcon} />
+        <TouchableOpacity style={styles.button} onPress={handleRegister} disabled={loading}>
+          {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.btnText}>Sign up</Text>}
         </TouchableOpacity>
-        <TouchableOpacity style={styles.socialBtn} onPress={handleFacebookSignIn}>
-          <Image source={require('../assets/facebook.png')} style={styles.socialIcon} />
-        </TouchableOpacity>
-        {Platform.OS === 'ios' && (
-          <TouchableOpacity style={styles.socialBtn} onPress={handleAppleSignIn}>
-            <Image source={require('../assets/apple.png')} style={styles.socialIcon} />
-          </TouchableOpacity>
-        )}
-      </View>
 
-      <Text style={styles.footer}>
-        Already have an account?{' '}
-        <Text style={styles.link} onPress={() => navigation.navigate('LoginScreen')}>
-          Log in
+        <Text style={styles.footer}>
+          Already have an account?{' '}
+          <Text style={styles.link} onPress={() => navigation.navigate('LoginScreen')}>
+            Log in
+          </Text>
         </Text>
-      </Text>
+      </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20, justifyContent: 'center' },
-  title: { fontSize: 26, fontWeight: 'bold', marginBottom: 20, textAlign: 'center' },
+  wrapper: {
+    flex: 1,
+    backgroundColor: '#f4f5f7',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  container: {
+    width: '85%',
+    backgroundColor: '#fff',
+    borderRadius: 25,
+    padding: 25,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    elevation: 5,
+  },
+  logoContainer: {
+    marginBottom: 20,
+    alignItems: 'center',
+  },
+  logoImage: {
+    width: 90,
+    height: 90,
+    resizeMode: 'contain',
+  },
+  title: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: '#2c2c2c',
+    marginBottom: 20,
+  },
   input: {
-    borderWidth: 1,
-    borderColor: '#ccc',
+    backgroundColor: '#f1f1f1',
+    borderRadius: 12,
     padding: 12,
-    borderRadius: 8,
-    marginBottom: 10,
+    width: '100%',
+    marginBottom: 12,
+    color: '#000',
   },
   button: {
     backgroundColor: '#6C63FF',
     padding: 15,
-    borderRadius: 8,
+    borderRadius: 12,
     alignItems: 'center',
-    marginTop: 10,
+    width: '100%',
+    marginTop: 5,
   },
-  btnText: { color: 'white', fontWeight: 'bold' },
-  error: { color: 'red', marginBottom: 10, textAlign: 'center' },
-  orText: { textAlign: 'center', marginVertical: 20, color: '#666' },
-  socialContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    gap: 20,
-    marginBottom: 20,
+  btnText: {
+    color: '#fff',
+    fontWeight: '600',
   },
-  socialBtn: {
-    padding: 10,
-    backgroundColor: '#f2f2f2',
-    borderRadius: 8,
+  error: {
+    color: 'red',
+    marginBottom: 10,
+    textAlign: 'center',
   },
-  socialIcon: {
-    width: 32,
-    height: 32,
-    resizeMode: 'contain',
+  footer: {
+    color: '#999',
+    marginTop: 20,
+    fontSize: 14,
   },
-  footer: { textAlign: 'center', marginTop: 10 },
-  link: { color: '#6C63FF', fontWeight: 'bold' },
+  link: {
+    color: '#6C63FF',
+    fontWeight: 'bold',
+  },
 });
 
 export default RegisterScreen;

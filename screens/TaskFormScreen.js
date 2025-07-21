@@ -25,14 +25,14 @@ const TaskFormScreen = ({ navigation, route }) => {
   const [showPicker, setShowPicker] = useState(false);
 
   const handleSave = () => {
-    if (!title || !description || !dueDate || !priority) {
-      Alert.alert('Validation Error', 'Please fill all fields');
+    if (!title.trim() || !description.trim() || !dueDate || !priority) {
+      Alert.alert('Missing Fields', 'Please fill out all fields before saving.');
       return;
     }
 
     const taskData = {
-      title,
-      description,
+      title: title.trim(),
+      description: description.trim(),
       dueDate: dueDate.toISOString(),
       priority,
       completed: editingTask?.completed || false,
@@ -56,25 +56,28 @@ const TaskFormScreen = ({ navigation, route }) => {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.header}>{editingTask ? 'Edit Task' : 'Add Task'}</Text>
+      <Text style={styles.header}>{editingTask ? 'Edit Task' : 'Add New Task'}</Text>
 
+      <Text style={styles.label}>Title</Text>
       <TextInput
         style={styles.input}
-        placeholder="Title"
+        placeholder="Enter task title"
         value={title}
         onChangeText={setTitle}
       />
 
+      <Text style={styles.label}>Description</Text>
       <TextInput
-        style={[styles.input, { height: 100 }]}
-        placeholder="Description"
+        style={[styles.input, styles.description]}
+        placeholder="Enter task details"
         value={description}
         onChangeText={setDescription}
         multiline
       />
 
+      <Text style={styles.label}>Due Date</Text>
       <TouchableOpacity onPress={() => setShowPicker(true)} style={styles.datePicker}>
-        <Text style={{ color: '#333' }}>Due: {dueDate.toDateString()}</Text>
+        <Text style={styles.dateText}>{dueDate.toDateString()}</Text>
       </TouchableOpacity>
 
       {showPicker && (
@@ -86,11 +89,13 @@ const TaskFormScreen = ({ navigation, route }) => {
         />
       )}
 
-      <View style={styles.pickerContainer}>
-        <Text style={{ marginBottom: 6 }}>Priority:</Text>
+      <Text style={styles.label}>Priority</Text>
+      <View style={styles.pickerWrapper}>
         <Picker
           selectedValue={priority}
           onValueChange={(itemValue) => setPriority(itemValue)}
+          style={styles.picker}
+          dropdownIconColor="#6C63FF"
         >
           <Picker.Item label="Low" value="low" />
           <Picker.Item label="Medium" value="medium" />
@@ -99,7 +104,7 @@ const TaskFormScreen = ({ navigation, route }) => {
       </View>
 
       <TouchableOpacity onPress={handleSave} style={styles.saveButton}>
-        <Text style={styles.saveText}>{editingTask ? 'Update' : 'Save'}</Text>
+        <Text style={styles.saveText}>{editingTask ? 'Update Task' : 'Save Task'}</Text>
       </TouchableOpacity>
     </ScrollView>
   );
@@ -107,48 +112,73 @@ const TaskFormScreen = ({ navigation, route }) => {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 20,
+    padding: 24,
     flexGrow: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#f7f8fa',
   },
   header: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    marginBottom: 20,
+    fontSize: 26,
+    fontWeight: '700',
+    paddingTop: 90,
     color: '#333',
+    marginBottom: 25,
+    textAlign: 'center',
+  },
+  label: {
+    fontSize: 14,
+    fontWeight: '600',
+    marginBottom: 6,
+    color: '#555',
   },
   input: {
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    paddingHorizontal: 15,
+    paddingVertical: 12,
     borderWidth: 1,
-    borderColor: '#ccc',
-    padding: 12,
-    borderRadius: 8,
-    marginBottom: 15,
+    borderColor: '#ddd',
+    marginBottom: 16,
     fontSize: 16,
+    color: '#333',
+  },
+  description: {
+    height: 100,
+    textAlignVertical: 'top',
   },
   datePicker: {
-    padding: 12,
-    borderRadius: 8,
+    backgroundColor: '#fff',
+    padding: 14,
+    borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#ccc',
-    marginBottom: 15,
+    borderColor: '#ddd',
+    marginBottom: 16,
   },
-  pickerContainer: {
+  dateText: {
+    fontSize: 16,
+    color: '#333',
+  },
+  pickerWrapper: {
+    borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 8,
-    marginBottom: 20,
-    paddingHorizontal: 4,
+    borderColor: '#ddd',
+    backgroundColor: '#fff',
+    marginBottom: 24,
+    overflow: 'hidden',
+  },
+  picker: {
+    height: 50,
+    color: '#333',
   },
   saveButton: {
     backgroundColor: '#6C63FF',
-    padding: 14,
-    borderRadius: 10,
+    paddingVertical: 16,
+    borderRadius: 14,
     alignItems: 'center',
   },
   saveText: {
     color: '#fff',
-    fontWeight: 'bold',
     fontSize: 16,
+    fontWeight: '600',
   },
 });
 
