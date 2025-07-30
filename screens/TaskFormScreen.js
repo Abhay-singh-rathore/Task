@@ -20,12 +20,18 @@ const TaskFormScreen = ({ navigation, route }) => {
 
   const [title, setTitle] = useState(editingTask?.title || '');
   const [description, setDescription] = useState(editingTask?.description || '');
-  const [dueDate, setDueDate] = useState(editingTask?.dueDate ? new Date(editingTask.dueDate) : new Date());
+  const [dueDate, setDueDate] = useState(
+    editingTask?.dueDate ? new Date(editingTask.dueDate) : new Date()
+  );
   const [priority, setPriority] = useState(editingTask?.priority || 'low');
   const [showPicker, setShowPicker] = useState(false);
 
+  const isFormValid = () => {
+    return title.trim() !== '' && description.trim() !== '' && dueDate && priority;
+  };
+
   const handleSave = () => {
-    if (!title.trim() || !description.trim() || !dueDate || !priority) {
+    if (!isFormValid()) {
       Alert.alert('Missing Fields', 'Please fill out all fields before saving.');
       return;
     }
@@ -47,7 +53,7 @@ const TaskFormScreen = ({ navigation, route }) => {
     navigation.goBack();
   };
 
-  const onDateChange = (event, selectedDate) => {
+  const handleDateChange = (event, selectedDate) => {
     setShowPicker(false);
     if (event.type === 'set' && selectedDate) {
       setDueDate(selectedDate);
@@ -85,7 +91,7 @@ const TaskFormScreen = ({ navigation, route }) => {
           value={dueDate}
           mode="date"
           display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-          onChange={onDateChange}
+          onChange={handleDateChange}
         />
       )}
 
@@ -93,7 +99,7 @@ const TaskFormScreen = ({ navigation, route }) => {
       <View style={styles.pickerWrapper}>
         <Picker
           selectedValue={priority}
-          onValueChange={(itemValue) => setPriority(itemValue)}
+          onValueChange={setPriority}
           style={styles.picker}
           dropdownIconColor="#6C63FF"
         >
@@ -104,7 +110,9 @@ const TaskFormScreen = ({ navigation, route }) => {
       </View>
 
       <TouchableOpacity onPress={handleSave} style={styles.saveButton}>
-        <Text style={styles.saveText}>{editingTask ? 'Update Task' : 'Save Task'}</Text>
+        <Text style={styles.saveText}>
+          {editingTask ? 'Update Task' : 'Save Task'}
+        </Text>
       </TouchableOpacity>
     </ScrollView>
   );
